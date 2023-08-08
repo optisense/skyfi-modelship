@@ -1,3 +1,6 @@
+import json
+from dataclasses import asdict
+
 from loguru import logger
 from .config import load_config
 
@@ -43,7 +46,11 @@ class SkyfiApp:
         else:
             from .handler.args_handler import ArgsHandler
             handler = ArgsHandler()
-            return handler.handle(self.inference_func)
+            result = handler.handle(self.inference_func)
+            logger.info("Printing inference to stout")
+
+            print(json.dumps(asdict(result), default=str))
+            return result
 
     def bootstrap(self, func):
         """

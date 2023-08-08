@@ -5,7 +5,7 @@ from loguru import logger
 
 from skyfi_modelship.util.execution import exec_func
 from skyfi_modelship.util.inference_request import convert_request
-from skyfi_modelship.skyfi_types import Image
+from skyfi_modelship.skyfi_types import Image, GeoJSON
 
 
 class ArgsHandler:
@@ -35,6 +35,8 @@ class ArgsHandler:
             if param.annotation == Image:
                 parser.add_argument(f'--{arg}.path', required=True)
                 parser.add_argument(f'--{arg}.type', required=True)
+            elif param.annotation == GeoJSON:
+                parser.add_argument(f'--{arg}', type=str, required=True)
             else:
                 parser.add_argument(f'--{arg}', type=param.annotation, required=True)
 

@@ -6,6 +6,9 @@ import shapely.wkt
 from pydantic import validator
 from pydantic.dataclasses import dataclass
 
+import geojson
+from geojson import GeoJSON as GeoJSONBase
+
 
 @dataclass
 class Integer:
@@ -55,6 +58,19 @@ class Polygon:
         return str(self).__repr__()
 
 
+@dataclass
+class GeoJSON:
+    """ Store a GeoJSON Feature Object. """
+
+    value: GeoJSONBase
+
+    def __str__(self) -> str:
+        return geojson.dumps(self.value)
+
+    def __repr__(self) -> str:
+        return str(self).__repr__()
+
+
 class ImageType(Enum):
     """ Supported image types. """
 
@@ -94,13 +110,6 @@ class OutputBase:
 
 
 @dataclass
-class ImageOutput(OutputBase, Image):
-    """ Output class for images. """
-
-    output_type: str = Image.__name__
-
-
-@dataclass
 class IntegerOutput(OutputBase, Integer):
     """ Output class for integers. """
 
@@ -119,3 +128,17 @@ class PolygonOutput(OutputBase, Polygon):
     """ Output class for polygons. """
 
     output_type: str = Polygon.__name__
+
+
+@dataclass
+class GeoJSONOutput(OutputBase, GeoJSON):
+    """ Output class for GeoJSON features. """
+
+    output_type: str = GeoJSON.__name__
+
+
+@dataclass
+class ImageOutput(OutputBase, Image):
+    """ Output class for images. """
+
+    output_type: str = Image.__name__

@@ -32,6 +32,7 @@ def test_app_no_output_folder():
     testargs = [
         "test", "--request_id", str(request_id),
     ]
+    # output folder is optional
     with patch.object(sys, 'argv', testargs):
-        with pytest.raises(Exception):
-            app.start()
+        response = app.start()
+        assert response, "app responds when using with argv response"

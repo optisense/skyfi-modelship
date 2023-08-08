@@ -3,12 +3,14 @@ from .skyfi_types import (
     Float,
     Integer,
     Polygon,
+    GeoJSON,
     Image,
     ImageType,
     OutputBase,
     IntegerOutput,
     FloatOutput,
     PolygonOutput,
+    GeoJSONOutput,
     ImageOutput,
 )
 
@@ -19,11 +21,13 @@ __all__ = [
     Float,
     Integer,
     Polygon,
+    GeoJSON,
     Image,
     ImageType,
     OutputBase,
     IntegerOutput,
     FloatOutput,
     PolygonOutput,
+    GeoJSONOutput,
     ImageOutput,
 ]

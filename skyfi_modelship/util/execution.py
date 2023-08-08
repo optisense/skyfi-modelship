@@ -4,7 +4,7 @@ import uuid
 
 from loguru import logger
 
-from pydantic.dataclasses import dataclass as py_dataclass
+from pydantic.dataclasses import dataclass
 
 from skyfi_modelship import skyfi_types as st
 
@@ -12,7 +12,7 @@ from .inference_request import InferenceRequest
 from .storage import local_folder, upload
 
 
-@py_dataclass
+@dataclass
 class InferenceResponse:
     """
     Contains the result of the inference. request_id and output_folder are the service parameters,
@@ -20,7 +20,7 @@ class InferenceResponse:
     """
 
     request_id: uuid.UUID
-    output_folder: str
+    output_folder: Optional[str]
     response: Any
 
 
