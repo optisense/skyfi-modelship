@@ -8,6 +8,8 @@ from pydantic.error_wrappers import ErrorWrapper, ValidationError
 
 from pydantic.dataclasses import dataclass as py_dataclass
 
+import geojson
+
 from skyfi_modelship import skyfi_types as st
 
 from .storage import download, local_folder
@@ -68,6 +70,14 @@ def convert_parameter(data: Any, param_type: type):
     elif type(data) == param_type:
         # already converted
         return data
+    elif param_type == st.GeoJSON and type(data) == dict:
+        # special case for GeoJSON when we already parsed a dict
+        value = geojson.GeoJSON(data)
+        return st.GeoJSON(value)
+    elif param_type == st.GeoJSON and type(data) == str:
+        # special case for GeoJSON when we have a string
+        value = geojson.loads(data)
+        return st.GeoJSON(value)
     if type(data) == dict:
         # complex types init, e.g. Image
         return param_type(**data)
