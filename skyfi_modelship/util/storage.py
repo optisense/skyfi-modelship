@@ -5,11 +5,11 @@ from pathlib import Path
 
 from loguru import logger
 
-storage_client = storage.Client()
-
 
 def download(path: str, folder: str) -> str:
     """ Download a file from a GCS bucket to a local folder. """
+
+    storage_client = storage.Client()
     try:
         Path(folder).mkdir(parents=True, exist_ok=True)
         filename = os.path.basename(path)
@@ -26,6 +26,8 @@ def download(path: str, folder: str) -> str:
 def upload(path: str, folder: str,
            func_name: str, name: Optional[str], ref_name: Optional[str]) -> str:
     """ Upload a file from a local folder to a GCS bucket. """
+
+    storage_client = storage.Client()
     try:
         dst_path = Path(path)
 

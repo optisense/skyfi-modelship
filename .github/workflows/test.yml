@@ -5,17 +5,14 @@ on:
   workflow_call:
 
 
-env:
-  PYTHON_VERSION: '3.9'
-
 jobs:
   test:
-    runs-on: ["self-hosted", "Linux", "dev"]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.9']
+        python-version: ['3.9', '3.11']
 
     steps:
       - name: Check out repo code
