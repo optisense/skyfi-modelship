@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "skyfi-modelship"
-version = "1.0.0"
+version = "0.0.0"
 description = "SkyFi ModelShip - **SkyFi Insights** partners integration library."
 license = "MIT"
 authors = ["Atanas Balevski <nasko@skyfi.com>"]
@@ -27,3 +27,10 @@ pytest = "^7.4.0"
 flake8 = "^6.0.0"
 mypy = "^0.991"
 black = "^22.10.0"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
