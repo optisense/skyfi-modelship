@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "skyfi-modelship"
 version = "0.0.0"
-description = "SkyFi ModelShip - **SkyFi Insights** partners integration library."
+description = "SkyFi ModelShip - The Insights partners integration library."
 license = "MIT"
 authors = ["Atanas Balevski <nasko@skyfi.com>"]
 readme = "README.md"
