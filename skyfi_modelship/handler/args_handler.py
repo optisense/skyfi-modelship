@@ -29,16 +29,21 @@ class ArgsHandler:
 
         # add the inference function arguments
         for arg, param in inspect.signature(func).parameters.items():
-            if param.annotation is inspect.Parameter.empty:
+            anno = param.annotation
+            if anno is inspect.Parameter.empty:
                 raise ValueError(f"Missing type annotation for argument {arg}")
 
-            if param.annotation == Image:
+            if anno == Image:
                 parser.add_argument(f'--{arg}.path', required=True)
                 parser.add_argument(f'--{arg}.type', required=True)
-            elif param.annotation == GeoJSON:
+            elif anno == GeoJSON:
                 parser.add_argument(f'--{arg}', type=str, required=True)
+            elif getattr(anno, "__origin__", None) == list:
+                type = anno.__args__[0] if hasattr(anno, "__args__") else str
+                parser.add_argument(f'--{arg}', type=type,
+                                    action="append", required=True)
             else:
-                parser.add_argument(f'--{arg}', type=param.annotation, required=True)
+                parser.add_argument(f'--{arg}', type=anno, required=True)
 
         data = vars(parser.parse_args(sys.argv[1:]))
         for arg, param in inspect.signature(func).parameters.items():
