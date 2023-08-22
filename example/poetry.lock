@@ -320,6 +320,18 @@ pycodestyle = ">=2.11.0,<2.12.0"
 pyflakes = ">=3.1.0,<3.2.0"
 
 [[package]]
+name = "geojson"
+version = "3.0.1"
+description = "Python bindings and utilities for GeoJSON"
+category = "main"
+optional = false
+python-versions = ">=3.7, <3.12"
+files = [
+    {file = "geojson-3.0.1-py3-none-any.whl", hash = "sha256:e49df982b204ed481e4c1236c57f587adf71537301cf8faf7120ab27d73c7568"},
+    {file = "geojson-3.0.1.tar.gz", hash = "sha256:ff3d75acab60b1e66504a11f7ea12c104bad32ff3c410a807788663b966dee4a"},
+]
+
+[[package]]
 name = "google-api-core"
 version = "2.11.1"
 description = "Google API client core library"
@@ -1322,31 +1334,28 @@ files = [
 ]
 
 [[package]]
-name = "skyfi-inference-lib"
-version = "1.0.0"
-description = ""
+name = "skyfi-modelship"
+version = "0.0.4"
+description = "SkyFi ModelShip - **SkyFi Insights** partners integration library."
 category = "main"
 optional = false
-python-versions = "~3.9"
-files = []
-develop = true
+python-versions = ">=3.9,<3.12"
+files = [
+    {file = "skyfi_modelship-0.0.4-py3-none-any.whl", hash = "sha256:4e98a3feaa5cee5382cc001fdf143827b674c83fe71482de817a1f1457baf259"},
+    {file = "skyfi_modelship-0.0.4.tar.gz", hash = "sha256:a79be6da506ea5548bb602e354a8d5db1a7eb1c7590924c5e5ecd0b858358448"},
+]
 
 [package.dependencies]
-fastapi = "^0.95.1"
-google-cloud-storage = "^2.10.0"
-loguru = "^0.6.0"
-orjson = "^3.9.1"
-pika = "^1.3.2"
-pydantic = "^1.10.6"
-python-dotenv = "^1.0.0"
-rasterio = "^1.3.8"
-rio-color = "^1.0.4"
-shapely = "^2.0.1"
-uvicorn = {version = "^0.22.0", extras = ["standard"]}
-
-[package.source]
-type = "directory"
-url = ".."
+fastapi = ">=0.95.1,<0.96.0"
+geojson = ">=3.0.1,<4.0.0"
+google-cloud-storage = ">=2.10.0,<3.0.0"
+loguru = ">=0.6.0,<0.7.0"
+orjson = ">=3.9.1,<4.0.0"
+pika = ">=1.3.2,<2.0.0"
+pydantic = ">=1.10.6,<2.0.0"
+python-dotenv = ">=1.0.0,<2.0.0"
+shapely = ">=2.0.1,<3.0.0"
+uvicorn = {version = ">=0.22.0,<0.23.0", extras = ["standard"]}
 
 [[package]]
 name = "sniffio"
@@ -1643,4 +1652,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.9"
-content-hash = "2e28f7750737ddb4e61f5c140701c21b6f76ce7a84500b82f1adacec18845f8c"
+content-hash = "4aeb22ae0e9ce5709b6406b7d6dc1dfe20e1c780e4e630dea6074cf4f7b95767"

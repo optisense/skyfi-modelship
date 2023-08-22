@@ -68,29 +68,33 @@ $ docker build . -t skyfi-modelship-example
 ```
 
 ## You're ready
-Now you have the image that can be used at **SkyFi's Insights** infrastructure.
+Now there's an image that can be used at **SkyFi's Insights** infrastructure.
 
-## Execution
-To perform a test request using the `fastapi` handler, you can:
+## Local execution
 
-1. start the container with:
-
+Provide the parameters as arguments, e.g.:
 ```bash
-docker run -e GOOGLE_APPLICATION_CREDENTIALS=/app/skyfi-service-account.json -e SKYFI_IS_FASTAPI_SERVER=true -e SKYFI_FASTAPI_HOST=0.0.0.0 -e SKYFI_FASTAPI_PORT=8000 -p 8000:8000 -it -v $(pwd)/google_service_account.json:/app/skyfi-service-account.json skyfi-modelship-example
+python main.py --int_number 42 --fl_number 4.2 --tiff_image.path=/tmp/tmp.tiff --tiff_image.type=GEOTIFF
 ```
 
-N.B. the `GOOGLE_APPLICATION_CREDENTIALS` env variable and the google service account mount are necessary only if there'll be some files to upload/download on **GCS**
+## Start a fastapi service
+To perform a test request using the `fastapi` handler:
 
-2. Run a test request:
+1. Start the container with:
+
+```bash
+docker run -e SKYFI_IS_FASTAPI_SERVER=true -e SKYFI_FASTAPI_HOST=0.0.0.0 -e SKYFI_FASTAPI_PORT=8000 -p 8000:8000 -it skyfi-modelship-example
+```
+
+1. Run a test request:
 ```json
 POST http://localhost:8000
 
 {
     "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
-    "output_folder": "gs://<BUCKET_ID>/output_folder",
     "int_number": 42,
     "tiff_image": {
-        "path": "gs://<BUCKET_ID>/<TIFF_FILENAME>", "type": "GEOTIFF"
+        "path": "/tmp/<TIFF_FILENAME>", "type": "GEOTIFF"
     },
     "poly": "POLYGON((-99 37,-98 35,-96 35,-96 38,-99 37))"
 }
@@ -100,10 +104,9 @@ POST http://localhost:8000
 ```json
 {
   "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
-  "output_folder": "gs://<BUCKET_ID>/output_folder",
   "response": [
     {
-      "path": "gs://<BUCKET_ID>/output_folder/<TIFF_FILENAME>_exec_output_for_tiff_image.tif",
+      "path": "/tmp/<TIFF_FILENAME>_exec_output_for_tiff_image.tif",
       "type": "GEOTIFF",
       "name": "output",
       "ref_name": "tiff_image",
@@ -142,3 +145,43 @@ POST http://localhost:8000
   ]
 }
 ```
+
+3. Automatic downloads from GCS
+When the reguest contains an `Image` with a `path` that's gsutil url (`gs://...`), then ModelShip will try to download it locally and substitute the `path` with the local one.
+
+4. Automatic uploads to GCS
+You can add an `output_folder` parameter to the request. Then all returned images will be uploaded to that specific folder and their `path` will be updated with the `gs://...` of the uploaded resource. e.g.:
+
+```json
+{
+    "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
+    "output_folder": "gs://<BUCKET_ID>/output_folder",
+    "int_number": 42,
+    "tiff_image": {
+        "path": "gs://<BUCKET_ID>/<TIFF_FILENAME>", "type": "GEOTIFF"
+    },
+    "poly": "POLYGON((-99 37,-98 35,-96 35,-96 38,-99 37))"
+}
+```
+
+and output (path starts with `gs://...`):
+```json
+
+{
+  "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
+  "response": [
+    {
+      "path": "gs://<BUCKET_ID>/output_folder/<TIFF_FILENAME>_exec_output_for_tiff_image.tif",
+      "type": "GEOTIFF",
+      ...
+```
+
+5. Google Storage Credentials
+When using automatic downloads or uploads to GCS, please specify a Google Storage credentials that can read/write the required resources:
+
+```bash
+docker run -e GOOGLE_APPLICATION_CREDENTIALS=/app/skyfi-service-account.json -e SKYFI_IS_FASTAPI_SERVER=true -e SKYFI_FASTAPI_HOST=0.0.0.0 -e SKYFI_FASTAPI_PORT=8000 -p 8000:8000 -it -v $(pwd)/google_service_account.json:/app/skyfi-service-account.json skyfi-modelship-example
+```
+
+N.B. the `GOOGLE_APPLICATION_CREDENTIALS` env variable and the google service account mount are necessary only if there'll be some files to upload/download on **GCS**
+
