@@ -23,16 +23,11 @@ pip install skyfi-modelship
 ```
 
 ## Getting Started
-
-1. Import the necessary modules:
+Create a SkyFi application and decorate your functions:
 
 ```python
 import skyfi_modelship as skyfi
-```
 
-2. Create a SkyFi application and decorate your functions:
-
-```python
 app = skyfi.SkyfiApp()
 
 @app.bootstrap
@@ -42,13 +37,37 @@ def download():
 
 
 @app.inference
-def exec(fl: skyfi.Float) -> skyfi.ImageOutput:
+def exec(image: skyfi.Image) -> skyfi.ImageOutput:
     logger.info("Running inference... ")
     return skyfi.ImageOutput(...)
 
 ```
 
-3. Create a `Dockerfile` for your project:
+
+## ModelShip Types
+The inference function should adhere to `PEP-484` and declare type hints. All types of the parameters and return types should be members of the `skyfi_modelship` package or lists of them.
+
+### Input types
+The inference decorated function will receive parameters only from the ModelShip supported input types, or lists of them. They're exported in the `skyfi_modelship` package:
+
+- skyfi_modelship.Integer - Store an integer value.
+- skyfi_modelship.Float - Store a float value.
+- skyfi_modelship.Polygon - Store a polygon as a wkt string.
+- skyfi_modelship.GeoJSON - Store a GeoJSON Feature Object.
+- skyfi_modelship.ImageType - Supported image types.
+- skyfi_modelship.Image - Store an image path and type.
+
+### Output types
+The inference decorated function should return objects that are from the ModelShip output types or lists of them. They're exported in the `skyfi_modelship` package:
+
+- skyfi_modelship.IntegerOutput - Output class for integers.
+- skyfi_modelship.FloatOutput - Output class for floats.
+- skyfi_modelship.PolygonOutput - Output class for polygons.
+- skyfi_modelship.GeoJSONOutput - Output class for GeoJSON features.
+- skyfi_modelship.ImageOutput - Output class for images.
+
+## Distribution
+1. Create a `Dockerfile` for your project, e.g.:
 ```
 FROM python:3.9.5-slim-buster
 
@@ -61,16 +80,16 @@ CMD ["python", "main.py"]
 
 ```
 
-4. Send your container image to SkyFi
+2. Send your container image to SkyFi
 Please contact bizdev@skyfi.com and discuss how we can privately access the container image.
 
 ## Examples
 
-Check out the [example](example) directory to see a working example and get inspired!
+Check out the [example](https://github.com/optisense/skyfi-modelship/tree/main/example) directory to see a working example and get inspired!
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](https://github.com/optisense/skyfi-modelship/tree/main/LICENSE).
 
 ## Contact
 

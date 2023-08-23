@@ -20,24 +20,15 @@ def download():
 ```python
 @app.inference
 def exec(
-    arr: List[skyfi.Float],
-    fl_number: skyfi.Float,
-    int_number: skyfi.Integer,
     tiff_image: skyfi.Image,
-    poly: skyfi.Polygon,
-) -> [skyfi.ImageOutput, skyfi.FloatOutput, skyfi.PolygonOutput]:
+) -> skyfi.ImageOutput:
     """Run inference on the Skyfi data."""
     logger.info(
-        "Running Skyfi inference... "
-        "{fl_number}, {int_number}, {tiff}, {poly}, {arr}",
-        fl_number=fl_number,
-        int_number=int_number,
-        tiff=tiff_image,
-        poly=poly,
-        arr=arr,
+        "Running Skyfi inference... {tiff_image}",
+        tiff_image=tiff_image,
     )
     ...
-    return image_output, float_output, polygon_output```
+    return image_output
 ```
 
 4. Start the application
@@ -74,7 +65,7 @@ Now there's an image that can be used at **SkyFi's Insights** infrastructure.
 
 Provide the parameters as arguments, e.g.:
 ```bash
-python main.py --int_number 42 --fl_number 4.2 --tiff_image.path=/tmp/tmp.tiff --tiff_image.type=GEOTIFF
+python main.py --tiff_image.path=/tmp/tmp.tiff --tiff_image.type=GEOTIFF
 ```
 
 ## Start a fastapi service
@@ -92,11 +83,10 @@ POST http://localhost:8000
 
 {
     "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
-    "int_number": 42,
     "tiff_image": {
-        "path": "/tmp/<TIFF_FILENAME>", "type": "GEOTIFF"
-    },
-    "poly": "POLYGON((-99 37,-98 35,-96 35,-96 38,-99 37))"
+        "path": "/tmp/<TIFF_FILENAME>",
+        "type": "GEOTIFF"
+    }
 }
 ```
 
@@ -117,30 +107,6 @@ POST http://localhost:8000
       ],
       "metadata": null,
       "output_type": "Image"
-    },
-    {
-      "value": 45.14,
-      "name": "idx",
-      "ref_name": "tiff_image",
-      "tags": [
-        "test1",
-        "test2",
-        "45.14"
-      ],
-      "metadata": null,
-      "output_type": "Float"
-    },
-    {
-      "wkt": "POLYGON((-99 37,-98 35,-96 35,-96 38,-99 37))",
-      "name": "poly",
-      "ref_name": "tiff_image",
-      "tags": [
-        "test1",
-        "test2",
-        "45.14"
-      ],
-      "metadata": null,
-      "output_type": "Polygon"
     }
   ]
 }
@@ -156,11 +122,9 @@ You can add an `output_folder` parameter to the request. Then all returned image
 {
     "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
     "output_folder": "gs://<BUCKET_ID>/output_folder",
-    "int_number": 42,
     "tiff_image": {
         "path": "gs://<BUCKET_ID>/<TIFF_FILENAME>", "type": "GEOTIFF"
-    },
-    "poly": "POLYGON((-99 37,-98 35,-96 35,-96 38,-99 37))"
+    }
 }
 ```
 
@@ -172,8 +136,10 @@ and output (path starts with `gs://...`):
   "response": [
     {
       "path": "gs://<BUCKET_ID>/output_folder/<TIFF_FILENAME>_exec_output_for_tiff_image.tif",
-      "type": "GEOTIFF",
-      ...
+      "type": "GEOTIFF"
+    }
+  ]
+}
 ```
 
 5. Google Storage Credentials
