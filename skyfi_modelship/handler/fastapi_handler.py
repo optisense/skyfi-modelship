@@ -5,7 +5,7 @@ from starlette import status
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from pydantic.error_wrappers import ErrorWrapper, ValidationError
+from pydantic import ValidationError
 
 from skyfi_modelship.config import load_config
 
@@ -30,10 +30,16 @@ class FastApiHandler:
             try:
                 r = convert_request(data, func)
             except ValidationError as ve:
-                raise RequestValidationError(errors=ve.raw_errors)
+                raise RequestValidationError(errors=ve.errors())
             except Exception as ex:
-                error = ErrorWrapper(ex, ("body"))
-                raise RequestValidationError(errors=[error])
+                err = ValidationError.from_exception_data(
+                    f"Validation error: {ex}", [
+                        {
+                            "type": "value_error",
+                            "loc": ("body",),
+                        }
+                    ])
+                raise RequestValidationError(errors=[err])
 
             logger.info("Calling inference function for request {request_id} => {func}({kwargs})",
                         request_id=r.request_id, func=func.__name__, kwargs=r.kwargs)

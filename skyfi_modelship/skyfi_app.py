@@ -1,7 +1,7 @@
-import json
-from dataclasses import asdict
-
 from loguru import logger
+import orjson
+from fastapi.encoders import jsonable_encoder
+
 from .config import load_config
 
 
@@ -47,9 +47,9 @@ class SkyfiApp:
             from .handler.args_handler import ArgsHandler
             handler = ArgsHandler()
             result = handler.handle(self.inference_func)
-            logger.info("Printing inference to stout")
+            logger.info("Printing inference to stdout")
 
-            print(json.dumps(asdict(result), default=str))
+            print(orjson.dumps(jsonable_encoder(result)))
             return result
 
     def bootstrap(self, func):

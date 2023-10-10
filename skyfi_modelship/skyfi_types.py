@@ -2,12 +2,11 @@ from enum import Enum
 import typing
 from typing import Any, Dict, Optional
 from loguru import logger
-import shapely.wkt
-from pydantic import validator
-from pydantic.dataclasses import dataclass
 
-import geojson
-from geojson import GeoJSON as GeoJSONBase
+import shapely.wkt
+from pydantic import field_validator
+from pydantic.dataclasses import dataclass
+from geojson_pydantic import FeatureCollection
 
 
 @dataclass
@@ -42,7 +41,7 @@ class Polygon:
 
     wkt: str
 
-    @validator("wkt")
+    @field_validator("wkt")
     def validate(cls, wkt):
         logger.info("Validating wkt ... {wkt}", wkt=wkt)
         try:
@@ -62,13 +61,7 @@ class Polygon:
 class GeoJSON:
     """ Store a GeoJSON Feature Object. """
 
-    value: GeoJSONBase
-
-    def __str__(self) -> str:
-        return geojson.dumps(self.value)
-
-    def __repr__(self) -> str:
-        return str(self).__repr__()
+    value: FeatureCollection
 
 
 class ImageType(Enum):

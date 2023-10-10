@@ -1,14 +1,16 @@
 import inspect
+import json
 from typing import Any, Optional
 import uuid
 
 from loguru import logger
 
-from pydantic.error_wrappers import ErrorWrapper, ValidationError
+from pydantic import ValidationError
 
 from pydantic.dataclasses import dataclass as py_dataclass
 
-import geojson
+from geojson_pydantic import FeatureCollection
+from pydantic_core import InitErrorDetails
 
 from skyfi_modelship import skyfi_types as st
 
@@ -52,12 +54,14 @@ def convert_request(data: dict, func) -> InferenceRequest:
             kwargs[arg] = convert_parameter(data_arg, param.annotation)
 
         except Exception as ex:
-            error = ErrorWrapper(ex, ("body", arg))
+            error = InitErrorDetails(type(ex).__name__, loc=(arg,), input=data.get(arg))
             errors.append(error)
 
     # raise ValidationError if there are any errors during the conversion
     if errors:
-        raise ValidationError(errors=errors, model=InferenceRequest)
+        raise ValidationError.from_exception_data(
+            "InferenceRequest Validation error",
+            line_errors=errors)
 
     return InferenceRequest(request_id=request_id, output_folder=output_folder, kwargs=kwargs)
 
@@ -70,18 +74,19 @@ def convert_parameter(data: Any, param_type: type):
     elif type(data) == param_type:
         # already converted
         return data
-    elif param_type == st.GeoJSON and type(data) == dict:
+    elif param_type == st.GeoJSON and isinstance(data, dict):
         # special case for GeoJSON when we already parsed a dict
-        value = geojson.GeoJSON(data)
+        value = FeatureCollection(data)
         return st.GeoJSON(value)
-    elif param_type == st.GeoJSON and type(data) == str:
+    elif param_type == st.GeoJSON and isinstance(data, str):
         # special case for GeoJSON when we have a string
-        value = geojson.loads(data)
+        data_dict = json.loads(data)
+        value = FeatureCollection(data_dict)
         return st.GeoJSON(value)
-    if type(data) == dict:
+    if isinstance(data, dict):
         # complex types init, e.g. Image
         return param_type(**data)
-    elif type(data) == list:
+    elif isinstance(data, list):
         # recursive conversion for lists
         values = []
         for value in data:
@@ -105,7 +110,7 @@ def pre_process(anno: type, arg: str, data: Any, request_id: Optional[uuid.UUID]
 
         # download the image to a local folder
         folder = local_folder(request_id, arg)
-        if type(data) != dict or "path" not in data:
+        if not isinstance(data, dict) or "path" not in data:
             raise ValueError("Image must be a dict with a `path` attribute")
 
         # skip if not gs file, e.g. local file

@@ -4,6 +4,8 @@ import pika
 from pika.channel import Channel
 from pika.spec import Basic
 
+from fastapi.encoders import jsonable_encoder
+
 from skyfi_modelship.config import load_config
 from skyfi_modelship.util.inference_request import convert_request
 from skyfi_modelship.util.execution import exec_func
@@ -71,7 +73,7 @@ class RabbitMQHandler:
                         correlation_id=properties.correlation_id,
                         content_type="application/json",
                     ),
-                    body=orjson.dumps(response),
+                    body=orjson.dumps(jsonable_encoder(response)),
                 )
                 logger.info(
                     "Acking request {request_id}: {delivery_tag}",
