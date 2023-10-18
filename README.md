@@ -50,8 +50,9 @@ The inference function should adhere to `PEP-484` and declare type hints. All ty
 ### Input types
 The inference decorated function will receive parameters only from the ModelShip supported input types, or lists of them. They're exported in the `skyfi_modelship` package:
 
-- skyfi_modelship.`Integer` - Store an integer value.
-- skyfi_modelship.`Float` - Store a float value.
+- skyfi_modelship.`int` - Store an integer value.
+- skyfi_modelship.`float` - Store a float value.
+- skyfi_modelship.`str` - Store a str value.
 - skyfi_modelship.`Polygon` - Store a polygon as a wkt string.
 - skyfi_modelship.`GeoJSON` - Store a GeoJSON Feature Object.
 - skyfi_modelship.`ImageType` - Supported image types.
@@ -60,8 +61,9 @@ The inference decorated function will receive parameters only from the ModelShip
 ### Output types
 The inference decorated function should return objects that are from the ModelShip output types or lists of them. They're exported in the `skyfi_modelship` package:
 
-- skyfi_modelship.`IntegerOutput` - Output class for integers.
+- skyfi_modelship.`IntOutput` - Output class for integers.
 - skyfi_modelship.`FloatOutput` - Output class for floats.
+- skyfi_modelship.`StrOutput` - Output class for strings.
 - skyfi_modelship.`PolygonOutput` - Output class for polygons.
 - skyfi_modelship.`GeoJSONOutput` - Output class for GeoJSON features.
 - skyfi_modelship.`ImageOutput` - Output class for images.

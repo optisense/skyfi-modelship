@@ -30,16 +30,7 @@ class FastApiHandler:
             try:
                 r = convert_request(data, func)
             except ValidationError as ve:
-                raise RequestValidationError(errors=ve.errors())
-            except Exception as ex:
-                err = ValidationError.from_exception_data(
-                    f"Validation error: {ex}", [
-                        {
-                            "type": "value_error",
-                            "loc": ("body",),
-                        }
-                    ])
-                raise RequestValidationError(errors=[err])
+                raise RequestValidationError(errors=ve.errors(), body=data)
 
             logger.info("Calling inference function for request {request_id} => {func}({kwargs})",
                         request_id=r.request_id, func=func.__name__, kwargs=r.kwargs)

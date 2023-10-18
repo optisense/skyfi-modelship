@@ -20,7 +20,7 @@ def download():
 @app.inference
 def exec(
     tiff_image: skyfi.Image,
-) -> [skyfi.ImageOutput, skyfi.GeoJSONOutput, List[skyfi.PolygonOutput]]:
+) -> [skyfi.ImageOutput, skyfi.GeoJSONOutput, skyfi.list[skyfi.PolygonOutput]]:
     """Georeferencing example."""
     logger.info(
         "Running georef example on ... " "{tiff}",

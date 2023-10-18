@@ -1,10 +1,9 @@
-from typing import List
 from loguru import logger
 
-import skyfi_modelship as skyfi
+import skyfi_modelship as s
 
 
-app = skyfi.SkyfiApp()
+app = s.SkyfiApp()
 
 
 @app.bootstrap
@@ -15,46 +14,58 @@ def download():
 
 @app.inference
 def exec(
-    arr: List[skyfi.Float],
-    fl_number: skyfi.Float,
-    int_number: skyfi.Integer,
-    tiff_image: skyfi.Image,
-    poly: skyfi.Polygon,
-) -> [skyfi.ImageOutput, skyfi.FloatOutput, skyfi.PolygonOutput]:
+    in_arr: s.list[s.float],
+    in_fl_number: s.float,
+    in_int_number: s.int,
+    in_tiff_image: s.Image,
+    in_poly: s.Polygon,
+    in_geojson: s.GeoJSON,
+) -> [s.ImageOutput,
+      s.FloatOutput,
+      s.list[s.FloatOutput],
+      s.PolygonOutput,
+      s.GeoJSONOutput]:
+
     """Run inference on the Skyfi data."""
     logger.info(
         "Running Skyfi inference... "
-        "{fl_number}, {int_number}, {tiff}, {poly}, {arr}",
-        fl_number=fl_number,
-        int_number=int_number,
-        tiff=tiff_image,
-        poly=poly,
-        arr=arr,
+        "{in_arr}, {in_fl_number}, {in_int_number}, {in_tiff_image}, {in_poly}, {in_geojson}",
+        in_arr=in_arr,
+        in_fl_number=in_fl_number,
+        in_int_number=in_int_number,
+        in_tiff_image=in_tiff_image,
+        in_poly=in_poly,
+        in_geojson=in_geojson,
     )
-    my_var = skyfi.Float(fl_number.value + int_number.value)
-    image_output = skyfi.ImageOutput(
-        path=tiff_image.path,
-        type=skyfi.ImageType.GEOTIFF,
+    my_var = in_fl_number + in_int_number
+    image_output = s.ImageOutput(
         name="output",
+        value=in_tiff_image,
         ref_name="tiff_image",
         tags=["test1", "test2", str(my_var)],
     )
 
-    float_output = skyfi.FloatOutput(
-        value=my_var,
+    float_output = s.FloatOutput(
         name="idx",
+        value=my_var,
         ref_name="tiff_image",
         tags=["test1", "test2", str(my_var)],
     )
 
-    polygon_output = skyfi.PolygonOutput(
-        wkt=poly.wkt,
+    polygon_output = s.PolygonOutput(
         name="poly",
+        value=in_poly,
         ref_name="tiff_image",
         tags=["test1", "test2", str(my_var)],
     )
 
-    return image_output, float_output, polygon_output
+    geojson_output = s.GeoJSONOutput(
+        name="geojson",
+        value=in_geojson,
+        ref_name="in_geojson",
+        tags=["test1", "test2", str(my_var)],
+    )
+    return image_output, float_output, [float_output], polygon_output, geojson_output
 
 
 app.start()

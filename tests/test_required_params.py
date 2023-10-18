@@ -14,7 +14,7 @@ def test_app_no_request_id():
         return skyfi.FloatOutput(value=42, name="output_num", ref_name="num_poly")
 
     testargs = [
-        "test", "--output_folder", "/tmp/skyfi",
+        "test", "--output-folder", "/tmp/skyfi",
     ]
     with patch.object(sys, 'argv', testargs):
         with pytest.raises(Exception):
@@ -30,7 +30,7 @@ def test_app_no_output_folder():
 
     request_id = uuid.UUID("00000000-0000-0000-0000-000000000001")
     testargs = [
-        "test", "--request_id", str(request_id),
+        "test", "--request-id", str(request_id),
     ]
     # output folder is optional
     with patch.object(sys, 'argv', testargs):
