@@ -1,49 +1,23 @@
 from enum import Enum
+from functools import cached_property
 import typing
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Generic, Optional, TypeVar
 from loguru import logger
+import orjson
+
 import shapely.wkt
-from pydantic import validator
+from pydantic import BaseModel, computed_field, field_validator
 from pydantic.dataclasses import dataclass
-
-import geojson
-from geojson import GeoJSON as GeoJSONBase
-
-
-@dataclass
-class Integer:
-    """ Store an integer value. """
-
-    value: int
-
-    def __int__(self):
-        return self.value
-
-    def __repr__(self) -> str:
-        return int(self).__repr__()
-
-
-@dataclass
-class Float:
-    """ Store a float value. """
-
-    value: float
-
-    def __float__(self):
-        return self.value
-
-    def __repr__(self) -> str:
-        return float(self).__repr__()
+from geojson_pydantic import FeatureCollection
 
 
 @dataclass
 class Polygon:
-    """ Store a polygon as a wkt string. """
-
     wkt: str
 
-    @validator("wkt")
-    def validate(cls, wkt):
+    @field_validator("wkt")
+    @classmethod
+    def valid_wkt(cls, wkt: str):
         logger.info("Validating wkt ... {wkt}", wkt=wkt)
         try:
             shapely.wkt.loads(wkt)
@@ -51,24 +25,37 @@ class Polygon:
             raise ValueError('must be a valid wkt')
         return wkt
 
-    def __str__(self) -> str:
-        return self.wkt
 
-    def __repr__(self) -> str:
-        return str(self).__repr__()
+class GeoJSON(FeatureCollection):
+    """ Store a GeoJSON Feature Object. """
+
+    def __init__(self, geo_str: Optional[object] = None, **kwargs) -> FeatureCollection:
+        if geo_str:
+            logger.info("Validating geo_json ... {geo_str}", geo_str=geo_str)
+            geo_json = str(geo_str)
+            geo_dict = orjson.loads(geo_json)
+            super().__init__(**geo_dict)
+        elif len(kwargs):
+            super().__init__(**kwargs)
+        else:
+            raise ValueError('must be a valid geo_json')
 
 
 @dataclass
-class GeoJSON:
+class GeoJSONProperty:
     """ Store a GeoJSON Feature Object. """
+    geo_json: FeatureCollection
 
-    value: GeoJSONBase
-
-    def __str__(self) -> str:
-        return geojson.dumps(self.value)
-
-    def __repr__(self) -> str:
-        return str(self).__repr__()
+    @field_validator("geo_json", mode="before")
+    @classmethod
+    def valid_geo_json(cls, geo_obj: object) -> FeatureCollection:
+        logger.info("Validating geo_json ... {geo_obj}", geo_obj=geo_obj)
+        try:
+            geo_json = str(geo_obj)
+            geo_dict = orjson.loads(geo_json)
+            return FeatureCollection(**geo_dict)
+        except Exception:
+            raise ValueError('must be a valid geo_json')
 
 
 class ImageType(Enum):
@@ -91,54 +78,53 @@ class Image:
     type: ImageType
 
 
-@dataclass
-class OutputBase:
+T = TypeVar("T", int, float, str, Polygon, GeoJSON, Image)
+
+
+class Output(BaseModel, Generic[T]):
     """
     Base class for all outputs.
 
     params:
     _name_: name of the output
-    _ref_name_: reference to the input
-    _tags_: tags for the output
-    _metadata_: additional metadata
+    _value_: the value representing the output
+    _ref_name_: (Optional) reference to the input
+    _tags_: (Optional) tags for the output
+    _metadata_: (Optional) additional metadata
     """
 
     name: str
+    value: T
+
     ref_name: Optional[str] = None
     tags: Optional[typing.List[str]] = None
     metadata: Optional[Dict[str, Any]] = None
 
-
-@dataclass
-class IntegerOutput(OutputBase, Integer):
-    """ Output class for integers. """
-
-    output_type: str = Integer.__name__
+    @computed_field
+    @cached_property
+    def output_type(self) -> str:
+        return type(self.value).__name__
 
 
-@dataclass
-class FloatOutput(OutputBase, Float):
-    """ Output class for floats. """
-
-    output_type: str = Float.__name__
+class IntOutput(Output[int]):
+    pass
 
 
-@dataclass
-class PolygonOutput(OutputBase, Polygon):
-    """ Output class for polygons. """
-
-    output_type: str = Polygon.__name__
+class FloatOutput(Output[float]):
+    pass
 
 
-@dataclass
-class GeoJSONOutput(OutputBase, GeoJSON):
-    """ Output class for GeoJSON features. """
-
-    output_type: str = GeoJSON.__name__
+class StrOutput(Output[str]):
+    pass
 
 
-@dataclass
-class ImageOutput(OutputBase, Image):
-    """ Output class for images. """
+class PolygonOutput(Output[Polygon]):
+    pass
 
-    output_type: str = Image.__name__
+
+class GeoJSONOutput(Output[GeoJSON]):
+    pass
+
+
+class ImageOutput(Output[Image]):
+    pass

@@ -155,5 +155,9 @@ skyfi*.json
 *.http
 
 producer.py
+consumer.py
 main_8bit.py
 main.py
+
+**/*.tif
+**/*.png

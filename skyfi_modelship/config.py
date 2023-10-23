@@ -1,6 +1,7 @@
 from functools import lru_cache
+from typing import Optional
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class SkyfiConfig(BaseSettings):
@@ -12,17 +13,17 @@ class SkyfiConfig(BaseSettings):
 
     # Rabbit MQ related
     is_rabbitmq_worker: bool = False
-    rabbitmq_host: str = None
-    rabbitmq_exchange: str = None
-    rabbitmq_req_queue: str = None
-    rabbitmq_resp_queue: str = None
-    rabbitmq_dl_exchange: str = None
-    rabbitmq_dl_queue: str = None
+    rabbitmq_host: Optional[str] = None
+    rabbitmq_exchange: Optional[str] = None
+    rabbitmq_req_queue: Optional[str] = None
+    rabbitmq_resp_queue: Optional[str] = None
+    rabbitmq_dl_exchange: Optional[str] = None
+    rabbitmq_dl_queue: Optional[str] = None
 
     # FastAPI related
     is_fastapi_server: bool = False
-    fastapi_host: str = None
-    fastapi_port: int = None
+    fastapi_host: Optional[str] = None
+    fastapi_port: Optional[int] = None
 
     class Config:
         # Use only SKYFI_ prefixed env vars for settings

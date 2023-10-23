@@ -13,21 +13,21 @@ def test_app_args():
         pass
 
     @app.inference
-    def inference(num: skyfi.Float, poly: skyfi.Polygon) -> skyfi.FloatOutput:
+    def inference(num: skyfi.float, poly: skyfi.Polygon) -> skyfi.FloatOutput:
         return skyfi.FloatOutput(
-            value=num.value * 2, name="output_num", ref_name="num_poly"
+            value=num * 2, name="output_num", ref_name="num_poly"
         )
 
     request_id = uuid.UUID("00000000-0000-0000-0000-000000000001")
     testargs = [
         "test",
-        "--request_id",
+        "--request-id",
         str(request_id),
-        "--output_folder",
+        "--output-folder",
         "/tmp/skyfi",
         "--num",
         "21",
-        "--poly",
+        "--poly.wkt",
         "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))",
     ]
     with patch.object(sys, "argv", testargs):
@@ -46,23 +46,23 @@ def test_app_list_args():
 
     @app.inference
     def inference(
-        int_list: List[skyfi.Integer]
+        int_list: List[skyfi.int]
     ) -> List[skyfi.FloatOutput]:
         return [
-            skyfi.IntegerOutput(
-                value=num.value * 2, name="output_ints", ref_name="int_list"
+            skyfi.IntOutput(
+                value=num * 2, name="output_ints", ref_name="int_list"
             )
             for num in int_list
         ]
 
     request_id = uuid.UUID("00000000-0000-0000-0000-000000000001")
     ints = [21, 42]
-    ints_args = [f"--int_list={i}" for i in ints]
     testargs = [
         "test",
-        "--request_id",
+        "--request-id",
         str(request_id),
-        *ints_args
+        "--int-list",
+        *[str(i) for i in ints]
     ]
     with patch.object(sys, "argv", testargs):
         response = app.start()
@@ -82,9 +82,9 @@ def test_app_no_bootstrap():
     request_id = uuid.UUID("00000000-0000-0000-0000-000000000001")
     testargs = [
         "test",
-        "--request_id",
+        "--request-id",
         str(request_id),
-        "--output_folder",
+        "--output-folder",
         "/tmp/skyfi",
     ]
     with patch.object(sys, "argv", testargs):

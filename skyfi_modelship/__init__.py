@@ -1,14 +1,15 @@
+from builtins import int, float, str, list, dict
+
 from .skyfi_app import SkyfiApp
 from .skyfi_types import (
-    Float,
-    Integer,
     Polygon,
     GeoJSON,
     Image,
     ImageType,
-    OutputBase,
-    IntegerOutput,
+    Output,
+    IntOutput,
     FloatOutput,
+    StrOutput,
     PolygonOutput,
     GeoJSONOutput,
     ImageOutput,
@@ -18,15 +19,19 @@ __version__ = "1.0.0"
 
 __all__ = [
     SkyfiApp,
-    Float,
-    Integer,
+    list,
+    dict,
+    int,
+    float,
+    str,
     Polygon,
     GeoJSON,
     Image,
     ImageType,
-    OutputBase,
-    IntegerOutput,
+    Output,
+    IntOutput,
     FloatOutput,
+    StrOutput,
     PolygonOutput,
     GeoJSONOutput,
     ImageOutput,
