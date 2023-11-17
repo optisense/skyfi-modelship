@@ -20,6 +20,7 @@ def exec(
     in_tiff_image: s.Image,
     in_poly: s.Polygon,
     in_geojson: s.GeoJSON,
+    in_metadata_xml: s.MetadataXml,
 ) -> [s.ImageOutput,
       s.FloatOutput,
       s.list[s.FloatOutput],
@@ -29,13 +30,15 @@ def exec(
     """Run inference on the Skyfi data."""
     logger.info(
         "Running Skyfi inference... "
-        "{in_arr}, {in_fl_number}, {in_int_number}, {in_tiff_image}, {in_poly}, {in_geojson}",
+        "{in_arr}, {in_fl_number}, {in_int_number}, {in_tiff_image}, "
+        "{in_poly}, {in_geojson}, {in_metadata_xml}",
         in_arr=in_arr,
         in_fl_number=in_fl_number,
         in_int_number=in_int_number,
         in_tiff_image=in_tiff_image,
         in_poly=in_poly,
         in_geojson=in_geojson,
+        in_metadata_xml=in_metadata_xml,
     )
     my_var = in_fl_number + in_int_number
     image_output = s.ImageOutput(
@@ -60,7 +63,7 @@ def exec(
     )
 
     geojson_output = s.GeoJSONOutput(
-        name="geojson",
+        name="my_geojson",
         value=in_geojson,
         ref_name="in_geojson",
         tags=["test1", "test2", str(my_var)],

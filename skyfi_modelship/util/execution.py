@@ -33,7 +33,7 @@ def exec_func(func, r: InferenceRequest) -> InferenceResponse:
     # call the function
     response = func(**vars(r.kwargs))
     # post process the response
-    walk_fields("", response, upload_callable(r.output_folder, func.__name__))
+    walk_fields("", response, upload_callable(r.output_folder, func.__name__, r.request_id))
     request_folder = local_folder(r.request_id)
     shutil.rmtree(request_folder, ignore_errors=True)
     return InferenceResponse(

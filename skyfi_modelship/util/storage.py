@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 from google.cloud import storage
 import os
 from pathlib import Path
@@ -55,3 +56,13 @@ def local_folder(*args) -> str:
     str_args = [str(arg) for arg in args]
     folder = "/".join(str_args)
     return f"/tmp/{folder}"
+
+
+def save_local_file(request_id: UUID, field, name: str, content: str) -> str:
+    folder = local_folder(request_id, field)
+    asset_path = f"{folder}/{name}.json"
+    os.makedirs(folder, exist_ok=True)
+    with open(asset_path, "w") as geojson_file:
+        geojson_file.write(content)
+
+    return asset_path
