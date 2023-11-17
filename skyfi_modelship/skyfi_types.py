@@ -41,23 +41,6 @@ class GeoJSON(FeatureCollection):
             raise ValueError('must be a valid geo_json')
 
 
-@dataclass
-class GeoJSONProperty:
-    """ Store a GeoJSON Feature Object. """
-    geo_json: FeatureCollection
-
-    @field_validator("geo_json", mode="before")
-    @classmethod
-    def valid_geo_json(cls, geo_obj: object) -> FeatureCollection:
-        logger.info("Validating geo_json ... {geo_obj}", geo_obj=geo_obj)
-        try:
-            geo_json = str(geo_obj)
-            geo_dict = orjson.loads(geo_json)
-            return FeatureCollection(**geo_dict)
-        except Exception:
-            raise ValueError('must be a valid geo_json')
-
-
 class ImageType(Enum):
     """ Supported image types. """
 
@@ -78,7 +61,18 @@ class Image:
     type: ImageType
 
 
-T = TypeVar("T", int, float, str, Polygon, GeoJSON, Image)
+@dataclass
+class MetadataXml:
+    """
+    Store an image metadata path.
+
+    path: will be local temporary path to the metadata xml
+    """
+
+    path: str
+
+
+T = TypeVar("T", int, float, str, Polygon, GeoJSON, Image, MetadataXml)
 
 
 class Output(BaseModel, Generic[T]):
@@ -123,7 +117,7 @@ class PolygonOutput(Output[Polygon]):
 
 
 class GeoJSONOutput(Output[GeoJSON]):
-    pass
+    path: Optional[str] = None
 
 
 class ImageOutput(Output[Image]):
