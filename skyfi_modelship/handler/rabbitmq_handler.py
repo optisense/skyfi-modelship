@@ -17,7 +17,7 @@ class RabbitMQHandler:
         config = load_config()
 
         connection = pika.BlockingConnection(
-            pika.ConnectionParameters(config.rabbitmq_host)
+            pika.URLParameters(config.rabbitmq_host)
         )
         channel = connection.channel()
 
