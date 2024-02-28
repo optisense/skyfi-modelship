@@ -20,8 +20,8 @@ def download():
 ```python
 @app.inference
 def exec(
-    tiff_image: skyfi.Image,
-) -> skyfi.ImageOutput:
+    tiff_image: skyfi.GeoTIFF,
+) -> skyfi.GeoTIFFOutput:
     """Run inference on the Skyfi data."""
     logger.info(
         "Running Skyfi inference... {tiff_image}",
@@ -65,7 +65,7 @@ Now there's an image that can be used at **SkyFi's Insights** infrastructure.
 
 Provide the parameters as arguments, e.g.:
 ```bash
-python main.py --tiff_image.path=/tmp/tmp.tiff --tiff_image.type=GEOTIFF
+python main.py --tiff_image.path=/tmp/tmp.tiff
 ```
 
 ## Start a fastapi service
@@ -84,8 +84,7 @@ POST http://localhost:8000
 {
     "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
     "tiff_image": {
-        "path": "/tmp/<TIFF_FILENAME>",
-        "type": "GEOTIFF"
+        "path": "/tmp/<TIFF_FILENAME>"
     }
 }
 ```
@@ -97,7 +96,6 @@ POST http://localhost:8000
   "response": [
     {
       "path": "/tmp/<TIFF_FILENAME>_exec_output_for_tiff_image.tif",
-      "type": "GEOTIFF",
       "name": "output",
       "ref_name": "tiff_image",
       "tags": [
@@ -106,24 +104,24 @@ POST http://localhost:8000
         "45.14"
       ],
       "metadata": null,
-      "output_type": "Image"
+      "output_type": "GeoTIFF"
     }
   ]
 }
 ```
 
 3. Automatic downloads from GCS
-When the reguest contains an `Image` with a `path` that's gsutil url (`gs://...`), then ModelShip will try to download it locally and substitute the `path` with the local one.
+When the reguest contains a type with file assets (`PNG`, `GeoTIFF`, `ENVI`, `Package`) which are gsutil urls (`gs://...`), then ModelShip will try to download the files locally and substitute the `path` attributes with the local ones.
 
 4. Automatic uploads to GCS
-You can add an `output_folder` parameter to the request. Then all returned images will be uploaded to that specific folder and their `path` will be updated with the `gs://...` of the uploaded resource. e.g.:
+You can add an `output_folder` parameter to the request. Then all returned file type outputs will be uploaded to that specific folder and their `path` attributes will be updated with the `gs://...` of the uploaded resources. e.g.:
 
 ```json
 {
     "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
     "output_folder": "gs://<BUCKET_ID>/output_folder",
     "tiff_image": {
-        "path": "gs://<BUCKET_ID>/<TIFF_FILENAME>", "type": "GEOTIFF"
+        "path": "gs://<BUCKET_ID>/<TIFF_FILENAME>"
     }
 }
 ```
@@ -135,8 +133,7 @@ and output (path starts with `gs://...`):
   "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
   "response": [
     {
-      "path": "gs://<BUCKET_ID>/output_folder/<TIFF_FILENAME>_exec_output_for_tiff_image.tif",
-      "type": "GEOTIFF"
+      "path": "gs://<BUCKET_ID>/output_folder/<TIFF_FILENAME>_exec_output_for_tiff_image.tif"
     }
   ]
 }

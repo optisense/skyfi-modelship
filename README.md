@@ -37,9 +37,9 @@ def download():
 
 
 @app.inference
-def exec(image: skyfi.Image) -> skyfi.ImageOutput:
+def exec(image: skyfi.GeoTIFF) -> skyfi.GeoTIFFOutput:
     logger.info("Running inference... ")
-    return skyfi.ImageOutput(...)
+    return skyfi.GeoTIFFOutput(...)
 
 ```
 
@@ -55,8 +55,9 @@ The inference decorated function will receive parameters only from the ModelShip
 - skyfi_modelship.`str` - Store a str value.
 - skyfi_modelship.`Polygon` - Store a polygon as a wkt string.
 - skyfi_modelship.`GeoJSON` - Store a GeoJSON Feature Object.
-- skyfi_modelship.`ImageType` - Supported image types.
-- skyfi_modelship.`Image` - Store an image path and type.
+- skyfi_modelship.`PNG` - Store a PNG image path and metadata xml.
+- skyfi_modelship.`GeoTIFF` - Store a GeoTIFF image path and metadata xml.
+- skyfi_modelship.`ENVI` - Store an ENVI path and header.
 
 ### Output types
 The inference decorated function should return objects that are from the ModelShip output types or lists of them. They're exported in the `skyfi_modelship` package:
@@ -66,7 +67,9 @@ The inference decorated function should return objects that are from the ModelSh
 - skyfi_modelship.`StrOutput` - Output class for strings.
 - skyfi_modelship.`PolygonOutput` - Output class for polygons.
 - skyfi_modelship.`GeoJSONOutput` - Output class for GeoJSON features.
-- skyfi_modelship.`ImageOutput` - Output class for images.
+- skyfi_modelship.`PNGOutput` - Output class for images.
+- skyfi_modelship.`GeoTIFFOutput` - Output class for images.
+- skyfi_modelship.`ENVIOutput` - Output class for images.
 
 ## Distribution
 1. Create a `Dockerfile` for your project, e.g.:

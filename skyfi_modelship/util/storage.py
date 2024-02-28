@@ -1,3 +1,4 @@
+import tempfile
 from typing import Optional
 from uuid import UUID
 from google.cloud import storage
@@ -55,7 +56,8 @@ def local_folder(*args) -> str:
     # compute local folder path given the args
     str_args = [str(arg) for arg in args]
     folder = "/".join(str_args)
-    return f"/tmp/{folder}"
+    tempdir = tempfile.gettempdir()
+    return f"{tempdir}/{folder}"
 
 
 def save_local_file(request_id: UUID, field, name: str, content: str) -> str:

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from loguru import logger
 
 from geojson_pydantic import Polygon, Feature, FeatureCollection
@@ -19,8 +19,8 @@ def download():
 
 @app.inference
 def exec(
-    tiff_image: skyfi.Image,
-) -> [skyfi.ImageOutput, skyfi.GeoJSONOutput, skyfi.list[skyfi.PolygonOutput]]:
+    tiff_image: skyfi.GeoTIFF,
+) -> Union[skyfi.GeoTIFFOutput, skyfi.GeoJSONOutput, skyfi.list[skyfi.PolygonOutput]]:
     """Georeferencing example."""
     logger.info(
         "Running georef example on ... " "{tiff}",
@@ -34,9 +34,8 @@ def exec(
     ]
     geojson = georeference(tiff_image, detections)
 
-    image_output = skyfi.ImageOutput(
+    image_output = skyfi.GeoTIFFOutput(
         path=tiff_image.path,
-        type=skyfi.ImageType.GEOTIFF,
         name="output",
         ref_name="tiff_image",
         tags=["test1", "test2", str(detections)],
@@ -53,7 +52,7 @@ def exec(
     return image_output, geojson_output, polygons_output
 
 
-def georeference(geo_tiff: skyfi.Image, detections: List[List[float]]):
+def georeference(geo_tiff: skyfi.GeoTIFF, detections: List[List[float]]):
     features = []
     logger.info(
         "Opening geotiff {geo_tiff} for geojson generation", geo_tiff=geo_tiff
