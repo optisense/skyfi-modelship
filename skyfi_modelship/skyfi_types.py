@@ -1,4 +1,3 @@
-from enum import Enum
 from functools import cached_property
 import typing
 from typing import Any, Dict, Generic, Optional, TypeVar
@@ -41,38 +40,60 @@ class GeoJSON(FeatureCollection):
             raise ValueError('must be a valid geo_json')
 
 
-class ImageType(Enum):
-    """ Supported image types. """
-
-    GEOTIFF = "GEOTIFF"
-    PNG = "PNG"
-
-
 @dataclass
 class Image:
     """
-    Store an image path and type.
+    Store an image path
 
     path: will be local temporary path to the image
-    type: type of the image
     """
 
     path: str
-    type: ImageType
 
 
 @dataclass
-class MetadataXml:
+class PNG(Image):
     """
-    Store an image metadata path.
+    Store a PNG image path and metadata xml if available
 
-    path: will be local temporary path to the metadata xml
+    path: will be local temporary path to the image
+    metadata_xml_path: (Optional) metadata xml for the image
     """
 
     path: str
+    metadata_xml_path: Optional[str] = None
 
 
-T = TypeVar("T", int, float, str, Polygon, GeoJSON, Image, MetadataXml)
+@dataclass
+class GeoTIFF(Image):
+    """
+    Store a GeoTIFF image path and metadata xml if available
+
+    path: will be local temporary path to the image
+    metadata_xml_path: (Optional) metadata xml for the image
+    """
+
+    metadata_xml_path: Optional[str] = None
+
+
+@dataclass
+class ENVI(Image):
+    """
+    Store an ENVI with path and header file if available
+
+    path: will be local temporary path to the image
+    header_path: (Optional) header file for the image
+    """
+
+    header_path: Optional[str] = None
+
+
+@dataclass
+class Package():
+    path: str
+
+
+T = TypeVar("T", int, float, str, Polygon, GeoJSON, PNG, GeoTIFF, ENVI, Package)
 
 
 class Output(BaseModel, Generic[T]):
@@ -120,5 +141,17 @@ class GeoJSONOutput(Output[GeoJSON]):
     path: Optional[str] = None
 
 
-class ImageOutput(Output[Image]):
+class PNGOutput(Output[PNG]):
+    pass
+
+
+class GeoTIFFOutput(Output[GeoTIFF]):
+    pass
+
+
+class ENVIOutput(Output[ENVI]):
+    pass
+
+
+class PackageOutput(Output[Package]):
     pass
