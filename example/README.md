@@ -148,3 +148,106 @@ docker run -e GOOGLE_APPLICATION_CREDENTIALS=/app/skyfi-service-account.json -e 
 
 N.B. the `GOOGLE_APPLICATION_CREDENTIALS` env variable and the google service account mount are necessary only if there'll be some files to upload/download on **GCS**
 
+
+6. Execute the main.py with arguments:
+Please use this vscode launch configurations to start the `example/main.py` with the required parameters
+
+```json
+{
+    "name": "Example main with args",
+    "type": "python",
+    "request": "launch",
+    "program": "main.py",
+    "cwd": "${workspaceFolder}/example",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "args": [
+        "--request-id", "00000000-0000-0000-0000-000000000004",
+        "--output-folder", "gs://storage.bucket.com/dev/0b4066a0-88ce-4626-a93e-f682b082e2a3/00000000-0000-0000-0000-000000000004",
+        "--in-arr", "42", "37",
+        "--in-fl-number", "3.14",
+        "--in-int-number", "42",
+        "--in-tiff-image.path", "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/SkyFi_Image.png",
+        "--in-tiff-image.metadata-xml-path", "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/tmp.tif",
+        "--in-envi.path", "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/SkyFi_Image.png",
+        "--in-envi.header-path", "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/tmp.tif",
+        "--in-pkg.path", "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/SkyFi_Image.tif",
+        "--in-poly", "POLYGON((-99 37,-98 35,-96 35,-96 38,-99 37))",
+        "--in-geojson", "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"coordinates\":[[-46.3657890591941,-23.960174571083655],[-46.32065446166027,-24.019338958736157]],\"type\":\"LineString\"}}]}",
+    ],
+},
+```
+
+7. Execute the main.py with fastapi and http requests:
+Please use this vscode configuration to start the fastapi service:
+
+```json
+{
+    "name": "example main FASTAPI",
+    "type": "python",
+    "request": "launch",
+    "program": "main.py",
+    "cwd": "${workspaceFolder}/example",
+    "console": "integratedTerminal",
+    "justMyCode": true,
+    "env": {
+        "SKYFI_IS_FASTAPI_SERVER": "true",
+        "SKYFI_FASTAPI_HOST": "0.0.0.0",
+        "SKYFI_FASTAPI_PORT": "8000"
+    }
+}
+```
+
+Then execute a http request with:
+
+```
+###
+POST http://localhost:8000
+
+{
+    "request_id": "00000000-0000-0000-0000-000000000003",
+    "output_folder": "gs://storage.bucket.com/dev/sub_folder/00000000-0000-0000-0000-000000000003",
+    "in_arr": [
+        42.0,
+        37.0
+    ],
+    "in_fl_number": 3.14,
+    "in_int_number": 42,
+    "in_tiff_image": {
+        "path": "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/SkyFi_Image.png",
+        "metadata_xml_path": "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/tmp.tif"
+    },
+    "in_envi": {
+        "path": "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/SkyFi_Image.png",
+        "metadata_xml_path": "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/tmp.tif"
+    },
+    "in_pkg": {
+        "path": "gs://storage.bucket.com/dev/test-workflows/test-inference-lib/SkyFi_Image.tif"
+    },
+    "in_poly": {
+        "wkt": "POLYGON((-99 37,-98 35,-96 35,-96 38,-99 37))"
+    },
+    "in_geojson": {
+        "type": "FeatureCollection",
+        "name": "black sea",
+        "crs": {
+            "type": "name",
+            "properties": {
+                "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+            }
+        },
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "coordinates": [
+                        [[30.21,46.26],[27.44,41.63],[30.69,40.60],[34.86,41.28],[40.13,40.47],[42.59,41.88],[37.69,45.19],[40.27,47.38],[34.94,46.53],[31.69,47.32],[30.21,46.26]]
+                    ],
+                    "type": "Polygon"
+                }
+            }
+        ]
+    }
+}
+```
