@@ -58,6 +58,7 @@ The inference decorated function will receive parameters only from the ModelShip
 - skyfi_modelship.`PNG` - Store a PNG image path and metadata xml.
 - skyfi_modelship.`GeoTIFF` - Store a GeoTIFF image path and metadata xml.
 - skyfi_modelship.`ENVI` - Store an ENVI path and header.
+- skyfi_modelship.`Package` - Store a package file, `zip` or `tar.gz`.
 
 ### Output types
 The inference decorated function should return objects that are from the ModelShip output types or lists of them. They're exported in the `skyfi_modelship` package:
@@ -70,6 +71,7 @@ The inference decorated function should return objects that are from the ModelSh
 - skyfi_modelship.`PNGOutput` - Output class for images.
 - skyfi_modelship.`GeoTIFFOutput` - Output class for images.
 - skyfi_modelship.`ENVIOutput` - Output class for images.
+- skyfi_modelship.`PackageOutput` - Output class for `zip` or `tar.gz` archives.
 
 ## Distribution
 1. Create a `Dockerfile` for your project, e.g.:
@@ -87,6 +89,79 @@ CMD ["python", "main.py"]
 
 2. Send your container image to SkyFi
 Please contact bizdev@skyfi.com and discuss how we can privately access the container image.
+
+## Optional parameters
+
+All parameters can be `Optional` if a more flexible interface is required.
+To fulfil the protocol, when executing requests, these parameters should be marked as null.
+
+Looking at example inference:
+
+```python
+    app = skyfi.SkyfiApp()
+
+    @app.inference
+    def inference(
+        in_tiff: Optional[skyfi.GeoTIFF], in_envi: Optional[skyfi.ENVI]
+    ) -> Tuple[Optional[skyfi.GeoTIFFOutput], Optional[skyfi.ENVIOutput]]:
+        tiff_output = None
+        if in_tiff:
+            tiff_output = skyfi.GeoTIFFOutput(
+                name="output",
+                value=in_tiff,
+                ref_name="in_tiff",
+            )
+
+        envi_output = None
+        if in_envi:
+            envi_output = skyfi.ENVIOutput(
+                name="output",
+                value=in_envi,
+                ref_name="in_envi",
+            )
+
+        return tiff_output, envi_output
+```
+
+### Then requesting with:
+
+- fastapi request:
+
+```
+POST http://localhost:8000
+
+{
+    "request_id": "119e16f9-03f8-4df7-841b-627c5d7838fa",
+    "in_tiff": {
+        "path": "test.tif",
+        "metadata_xml_path": "test.xml"
+    },
+    "in_envi": null
+}
+```
+
+would suggest an `in_envi is None`
+
+- cli through argparse
+
+```json
+{
+    "name": "Example main with args",
+    "type": "python",
+    "request": "launch",
+    "program": "main.py",
+    "cwd": "${workspaceFolder}/example",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "args": [
+        "--request-id", "00000000-0000-0000-0000-000000000004",
+        "--in-tiff.path": "test.tif",
+        "--in-tiff.metdata_xml_path": "test.xml"
+    ]
+}
+```
+
+Here it's enough to specify the non-None arguments
 
 ## Examples
 

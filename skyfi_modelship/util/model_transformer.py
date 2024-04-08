@@ -20,7 +20,7 @@ def walk_fields(field_key: str, obj: Any, fn: Callable, **kwargs) -> Any:
 def download_callable(request_id: Optional[uuid.UUID] = None) -> Callable:
 
     def download_asset(field: str, asset: Any, **kwargs):
-        if not isinstance(asset, (st.Image, st.Package)):
+        if not isinstance(asset, st.File):
             return
 
         if not request_id:
@@ -33,9 +33,11 @@ def download_callable(request_id: Optional[uuid.UUID] = None) -> Callable:
 
         folder = local_folder(request_id, field)
         asset.path = download(asset.path, folder)
+
+        # download aux files
         if isinstance(asset, (st.PNG, st.GeoTIFF)) and asset.metadata_xml_path:
             asset.metadata_xml_path = download(asset.metadata_xml_path, folder)
-        if isinstance(asset, st.ENVI) and asset.header_path:
+        elif isinstance(asset, st.ENVI) and asset.header_path:
             asset.header_path = download(asset.header_path, folder)
 
     return download_asset
@@ -58,17 +60,19 @@ def upload_callable(
             return
 
         value = asset.value
-        if isinstance(value, (st.Image, st.Package)):
+        if isinstance(value, st.File):
+            # upload main file
             value.path = upload(
                 value.path, output_folder,
                 func_name, name=asset.name, ref_name=asset.ref_name,
             )
+            # upload aux files
             if isinstance(value, (st.PNG, st.GeoTIFF)) and value.metadata_xml_path:
                 value.metadata_xml_path = upload(
                     value.metadata_xml_path, output_folder,
                     func_name, name=asset.name, ref_name=asset.ref_name,
                 )
-            if isinstance(value, st.ENVI) and value.header_path:
+            elif isinstance(value, st.ENVI) and value.header_path:
                 value.header_path = upload(
                     value.header_path, output_folder,
                     func_name, name=asset.name, ref_name=asset.ref_name,

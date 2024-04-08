@@ -1,4 +1,5 @@
 from functools import cached_property
+import os
 import typing
 from typing import Any, Dict, Generic, Optional, TypeVar
 from loguru import logger
@@ -28,7 +29,7 @@ class Polygon:
 class GeoJSON(FeatureCollection):
     """ Store a GeoJSON Feature Object. """
 
-    def __init__(self, geo_str: Optional[object] = None, **kwargs) -> FeatureCollection:
+    def __init__(self, geo_str: Optional[object] = None, **kwargs):
         if geo_str:
             logger.info("Validating geo_json ... {geo_str}", geo_str=geo_str)
             geo_json = str(geo_str)
@@ -40,44 +41,68 @@ class GeoJSON(FeatureCollection):
             raise ValueError('must be a valid geo_json')
 
 
-@dataclass
-class Image:
-    """
-    Store an image path
+def make_ext_validator(extensions: typing.List[str]):
+    def validate_extension(path: Optional[str]):
+        if path:
+            ext = os.path.splitext(path)[1]
+            if ext.lower() not in extensions:
+                raise ValueError(f"File extension must be one of {extensions}")
+        return path
 
-    path: will be local temporary path to the image
+    return validate_extension
+
+
+def validate_not_empty_string(value: str):
+    if not value:
+        raise ValueError("String must not be empty")
+    return value
+
+
+@dataclass
+class File:
+    """
+    Store an file path
+
+    path: will be local temporary path to the file
     """
 
     path: str
 
+    _path_not_empty = field_validator("path")(validate_not_empty_string)
+
 
 @dataclass
-class PNG(Image):
+class PNG(File):
     """
     Store a PNG image path and metadata xml if available
 
     path: will be local temporary path to the image
-    metadata_xml_path: (Optional) metadata xml for the image
+    metadata_path: (Optional) metadata xml for the image
     """
 
-    path: str
-    metadata_xml_path: Optional[str] = None
+    metadata_path: Optional[str] = None
+
+    _validate_image_ext = field_validator("path")(make_ext_validator([".png"]))
+    _validate_metadata_xml_ext = field_validator("metadata_xml_path")(make_ext_validator([".xml"]))
 
 
 @dataclass
-class GeoTIFF(Image):
+class GeoTIFF(File):
     """
     Store a GeoTIFF image path and metadata xml if available
 
     path: will be local temporary path to the image
-    metadata_xml_path: (Optional) metadata xml for the image
+    metadata_path: (Optional) metadata xml for the image
     """
 
     metadata_xml_path: Optional[str] = None
 
+    _validate_image_ext = field_validator("path")(make_ext_validator([".tiff", ".tif"]))
+    _validate_metadata_xml_ext = field_validator("metadata_xml_path")(make_ext_validator([".xml"]))
+
 
 @dataclass
-class ENVI(Image):
+class ENVI(File):
     """
     Store an ENVI with path and header file if available
 
@@ -87,10 +112,19 @@ class ENVI(Image):
 
     header_path: Optional[str] = None
 
+    _validate_image_ext = field_validator("path")(make_ext_validator(["", ".dat", ".img", ".bil"]))
+    _validate_header_ext = field_validator("header_path")(make_ext_validator([".hdr"]))
+
 
 @dataclass
-class Package():
-    path: str
+class Package(File):
+    """
+    Store a package file
+
+    path: will be local temporary path to archive
+    """
+
+    _validate_pkg_ext = field_validator("path")(make_ext_validator([".zip", ".tar.gz"]))
 
 
 T = TypeVar("T", int, float, str, Polygon, GeoJSON, PNG, GeoTIFF, ENVI, Package)
