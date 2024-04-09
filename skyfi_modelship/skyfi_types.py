@@ -175,6 +175,10 @@ class GeoJSONOutput(Output[GeoJSON]):
     path: Optional[str] = None
 
 
+class FileOutput(Output[File]):
+    pass
+
+
 class PNGOutput(Output[PNG]):
     pass
 
