@@ -4,6 +4,7 @@ from .skyfi_app import SkyfiApp
 from .skyfi_types import (
     Polygon,
     GeoJSON,
+    File,
     PNG,
     GeoTIFF,
     ENVI,
@@ -29,6 +30,7 @@ __all__ = [
     float,
     str,
     Polygon,
+    File,
     GeoJSON,
     PNG,
     GeoTIFF,
@@ -39,6 +41,7 @@ __all__ = [
     StrOutput,
     PolygonOutput,
     GeoJSONOutput,
+    FileOutput,
     PNGOutput,
     GeoTIFFOutput,
     ENVIOutput,
