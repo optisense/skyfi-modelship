@@ -14,6 +14,7 @@ from .skyfi_types import (
     StrOutput,
     PolygonOutput,
     GeoJSONOutput,
+    FileOutput,
     PNGOutput,
     GeoTIFFOutput,
     ENVIOutput,
