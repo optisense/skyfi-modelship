@@ -32,8 +32,9 @@ class SkyfiApp:
         config = load_config()
 
         # Initialize cloud storage provider
-        set_provider_config(provider=config.cloud_environment)
-        logger.info(f"Cloud storage provider configured: {config.cloud_environment}")
+        provider = getattr(config, 'cloud_environment', 'gcp') or 'gcp'
+        set_provider_config(provider=provider)
+        logger.info(f"Cloud storage provider configured: {provider}")
 
         # if rabbitmq is enabled, import and call the handler
         if config.is_rabbitmq_worker:
