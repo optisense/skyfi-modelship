@@ -24,6 +24,7 @@ class SkyfiConfig(BaseSettings):
     is_fastapi_server: bool = False
     fastapi_host: Optional[str] = None
     fastapi_port: Optional[int] = None
+    cloud_environment: str = "gcp"
 
     class Config:
         # Use only SKYFI_ prefixed env vars for settings

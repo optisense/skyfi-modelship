@@ -2,6 +2,7 @@ from loguru import logger
 import orjson
 from fastapi.encoders import jsonable_encoder
 
+from skyfi_cloud.storage import set_provider_config
 from .config import load_config
 
 
@@ -29,6 +30,10 @@ class SkyfiApp:
             self.bootstrap_func()
 
         config = load_config()
+
+        # Initialize cloud storage provider
+        set_provider_config(provider=config.cloud_environment)
+        logger.info(f"Cloud storage provider configured: {config.cloud_environment}")
 
         # if rabbitmq is enabled, import and call the handler
         if config.is_rabbitmq_worker:

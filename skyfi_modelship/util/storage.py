@@ -1,22 +1,23 @@
 import tempfile
 from typing import Optional
 from uuid import UUID
-from google.cloud import storage
 import os
 from pathlib import Path
 
 from loguru import logger
 
+from skyfi_cloud.storage import get_client, blob_from_string
+
 
 def download(path: str, folder: str) -> str:
-    """ Download a file from a GCS bucket to a local folder. """
+    """ Download a file from a cloud storage bucket to a local folder. """
 
-    storage_client = storage.Client()
+    storage_client = get_client()
     try:
         Path(folder).mkdir(parents=True, exist_ok=True)
         filename = os.path.basename(path)
         destination = f"{folder}/{filename}"
-        blob = storage.Blob.from_string(path, client=storage_client)
+        blob = blob_from_string(path, client=storage_client)
         logger.info("Downloading file... {path} to {destination}",
                     path=path, destination=destination)
         blob.download_to_filename(destination)
@@ -27,9 +28,9 @@ def download(path: str, folder: str) -> str:
 
 def upload(path: str, folder: str,
            func_name: str, name: Optional[str], ref_name: Optional[str]) -> str:
-    """ Upload a file from a local folder to a GCS bucket. """
+    """ Upload a file from a local folder to a cloud storage bucket. """
 
-    storage_client = storage.Client()
+    storage_client = get_client()
     try:
         dst_path = Path(path)
 
@@ -45,7 +46,7 @@ def upload(path: str, folder: str,
         # upload the file
         logger.info("Uploading file... {path} to {dst}",
                     path=path, dst=dst)
-        blob = storage.Blob.from_string(dst, client=storage_client)
+        blob = blob_from_string(dst, client=storage_client)
         blob.upload_from_filename(path)
         return dst
     except Exception as ex:
