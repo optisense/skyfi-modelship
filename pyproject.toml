@@ -30,7 +30,6 @@ name = "skyfi-python"
 url = "https://us-central1-python.pkg.dev/skyfi-336416/skyfi-python/simple/"
 priority = "supplemental"
 
-
 [[tool.poetry.source]]
 name = "PyPI"
 priority = "primary"
