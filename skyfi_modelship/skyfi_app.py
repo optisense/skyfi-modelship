@@ -2,7 +2,7 @@ from loguru import logger
 import orjson
 from fastapi.encoders import jsonable_encoder
 
-from skyfi_cloud.storage import set_provider_config
+from skyfi_cloud import set_provider_config
 from .config import load_config
 
 

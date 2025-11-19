@@ -9,7 +9,7 @@ packages = [{include = "skyfi_modelship"}]
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.12"
+python = ">=3.10,<3.12"
 python-dotenv = "^1.0.1"
 pydantic = "^2.6.3"
 loguru = "^0.7.2"
@@ -41,6 +41,12 @@ pytest = "^7.4.2"
 flake8 = "^6.1.0"
 mypy = "^1.5.1"
 black = "^23.9.1"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
 
 [tool.poetry-dynamic-versioning]
 enable = true
