@@ -16,11 +16,11 @@ jobs:
 
     steps:
       - name: Check out repo code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         id: setup-python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
 
@@ -29,10 +29,22 @@ jobs:
 
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Authenticate to Google Cloud
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Configure Poetry for Artifact Registry
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: |
+          TOKEN=$(gcloud auth application-default print-access-token)
+          poetry config http-basic.skyfi-python oauth2accesstoken "$TOKEN"
 
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
