@@ -1313,14 +1313,14 @@ yaml = ["pyyaml"]
 
 [[package]]
 name = "skyfi-cloud"
-version = "0.1.4"
+version = "0.1.5"
 description = "Cloud-agnostic storage interface for SkyFi - GCS shim with future multi-cloud support"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "skyfi_cloud-0.1.4-py3-none-any.whl", hash = "sha256:9b27b95e54bb1ac82c33ba0402056094ae0ebb4ce1227d6439b44230e857d83f"},
-    {file = "skyfi_cloud-0.1.4.tar.gz", hash = "sha256:06dfdfb34ed75ca782fe3d5169821c98620e556e0d0123c5f5cb698d4f12e99a"},
+    {file = "skyfi_cloud-0.1.5-py3-none-any.whl", hash = "sha256:f9a3957b91eb61aaf07a12c596cecbc0b5acef22de199ed8f516f3d75a6b390e"},
+    {file = "skyfi_cloud-0.1.5.tar.gz", hash = "sha256:aa1a5d435f4294ad904892ed16674bfe1b2f38fb98ff825e13bcbfe000abff04"},
 ]
 
 [package.dependencies]
@@ -1672,4 +1672,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "b0e2c50e3662fc620d9d767876cc9a0b1e87279bb1723673105fb58f09d699e0"
+content-hash = "3c81a32c18b0789d8feed6e0e01a39d3784c9c1214a75ba0e3005cc93edf4605"
