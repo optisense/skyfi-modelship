@@ -16,7 +16,22 @@ jobs:
 
     steps:
       - name: Check out repo code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed Python files
+        id: changed-files
+        uses: tj-actions/changed-files@v47
+        with:
+          files: |
+            **.py
+
+      - name: Run ruff on changed files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: astral-sh/ruff-action@v3
+        with:
+          src: ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Set up Python
         id: setup-python
@@ -37,9 +52,6 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --with dev --no-interaction --no-root
-
-      - name: Run linter
-        run: poetry run flake8 --exclude .venv
 
       - name: Run tests
         run: |
