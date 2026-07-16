@@ -11,15 +11,6 @@ class SkyfiConfig(BaseSettings):
     for executing the model inference on SkyFi's infrastructure.
     """
 
-    # Rabbit MQ related
-    is_rabbitmq_worker: bool = False
-    rabbitmq_host: Optional[str] = None
-    rabbitmq_exchange: Optional[str] = None
-    rabbitmq_req_queue: Optional[str] = None
-    rabbitmq_resp_queue: Optional[str] = None
-    rabbitmq_dl_exchange: Optional[str] = None
-    rabbitmq_dl_queue: Optional[str] = None
-
     # FastAPI related
     is_fastapi_server: bool = False
     fastapi_host: Optional[str] = None
