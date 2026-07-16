@@ -30,14 +30,8 @@ class SkyfiApp:
 
         config = load_config()
 
-        # if rabbitmq is enabled, import and call the handler
-        if config.is_rabbitmq_worker:
-            from .handler.rabbitmq_handler import RabbitMQHandler
-            handler = RabbitMQHandler()
-            handler.listen(self.inference_func)
-
         # if fastapi is enabled, import and call the handler
-        elif config.is_fastapi_server:
+        if config.is_fastapi_server:
             from .handler.fastapi_handler import FastApiHandler
             handler = FastApiHandler()
             handler.listen(self.inference_func)
