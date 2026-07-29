@@ -34,6 +34,32 @@ jobs:
       # vulnerable packages beyond SEC-842's scope (starlette/requests/certifi).
       # Surface findings in every run so they're visible, but don't fail
       # builds until that broader remediation is scoped and done separately.
+      # A valid vulnerability report (exit 1 + parseable JSON) is informational;
+      # a scanner crash / network / resolver failure (no valid JSON) still fails
+      # the job, so a broken audit can't silently look green.
       - name: Run pip-audit
-        run: pip-audit -r requirements-audit.txt
-        continue-on-error: true
+        run: |
+          set +e
+          pip-audit -r requirements-audit.txt --format json > audit-results.json
+          set -e
+
+          if [ ! -s audit-results.json ] || ! python -c "import json; json.load(open('audit-results.json'))" 2>/dev/null; then
+            echo "pip-audit failed to produce a valid report (scanner/network/resolver error) — failing the job."
+            exit 1
+          fi
+
+          python - <<'PY'
+          import json
+
+          with open("audit-results.json") as f:
+              data = json.load(f)
+
+          vulnerable = [d for d in data["dependencies"] if d.get("vulns")]
+          if not vulnerable:
+              print("pip-audit: no known vulnerabilities.")
+          else:
+              print(f"pip-audit: {len(vulnerable)} package(s) with known vulnerabilities (non-blocking):")
+              for dep in vulnerable:
+                  ids = ", ".join(v["id"] for v in dep["vulns"])
+                  print(f"  {dep['name']} {dep['version']}: {ids}")
+          PY
