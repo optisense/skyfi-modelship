@@ -30,13 +30,6 @@ jobs:
       - name: Install pip-audit
         run: python -m pip install --no-cache-dir pip-audit
 
-      # Non-blocking for now: the existing dependency set has pre-existing
-      # vulnerable packages beyond SEC-842's scope (starlette/requests/certifi).
-      # Surface findings in every run so they're visible, but don't fail
-      # builds until that broader remediation is scoped and done separately.
-      # A valid vulnerability report (exit 1 + parseable JSON) is informational;
-      # a scanner crash / network / resolver failure (no valid JSON) still fails
-      # the job, so a broken audit can't silently look green.
       - name: Run pip-audit
         run: |
           set +e
