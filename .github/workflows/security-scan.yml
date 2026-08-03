@@ -1,0 +1,58 @@
+name: security-scan
+
+on:
+  push:
+  workflow_call:
+
+jobs:
+  dependency-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repo code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: python -m pip install --no-cache-dir -v "poetry>=1.3,<1.4"
+
+      - name: Export locked dependencies
+        run: poetry export -f requirements.txt --without-hashes --with dev -o requirements-audit.txt
+
+      - name: Install pip-audit
+        run: python -m pip install --no-cache-dir pip-audit
+
+      - name: Run pip-audit
+        run: |
+          set +e
+          pip-audit -r requirements-audit.txt --format json > audit-results.json
+          set -e
+
+          if [ ! -s audit-results.json ] || ! python -c "import json; json.load(open('audit-results.json'))" 2>/dev/null; then
+            echo "pip-audit failed to produce a valid report (scanner/network/resolver error) — failing the job."
+            exit 1
+          fi
+
+          python - <<'PY'
+          import json
+
+          with open("audit-results.json") as f:
+              data = json.load(f)
+
+          vulnerable = [d for d in data["dependencies"] if d.get("vulns")]
+          if not vulnerable:
+              print("pip-audit: no known vulnerabilities.")
+          else:
+              print(f"pip-audit: {len(vulnerable)} package(s) with known vulnerabilities (non-blocking):")
+              for dep in vulnerable:
+                  ids = ", ".join(v["id"] for v in dep["vulns"])
+                  print(f"  {dep['name']} {dep['version']}: {ids}")
+          PY
