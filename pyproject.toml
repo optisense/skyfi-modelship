@@ -9,7 +9,7 @@ packages = [{include = "skyfi_modelship"}]
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.12"
+python = ">=3.11"
 python-dotenv = "^1.0.1"
 pydantic = "^2.6.3"
 loguru = "^0.7.2"
