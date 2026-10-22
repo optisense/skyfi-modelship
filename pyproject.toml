@@ -24,7 +24,7 @@ pydantic-settings = "^2.2.1"
 simple-parsing = "^0.1.5"
 pytest-mock = "^3.14.0"
 requests = ">=2.32.4"
-certifi = ">=2024.7.4"
+certifi = ">=2026.10.19"
 
 
 [tool.poetry.group.dev.dependencies]
